@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAppState } from "../../util/app-state";
 import { Formik } from "formik";
 import * as yup from "yup";
+import styled from "styled-components";
 
 import {
   InputLabel,
@@ -15,20 +16,20 @@ import {
   FormControlLabel,
   Switch,
   TextField
-} from "@material-ui/core";
+} from "@mui/material";
 
-import FilledInput from "@material-ui/core/FilledInput";
-import ListItemText from "@material-ui/core/ListItemText";
-import Checkbox from "@material-ui/core/Checkbox";
+import FilledInput from "@mui/material/FilledInput";
+import ListItemText from "@mui/material/ListItemText";
+import Checkbox from "@mui/material/Checkbox";
 
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Select from "@material-ui/core/Select";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Select from "@mui/material/Select";
 
-import { withStyles, makeStyles, useTheme } from "@material-ui/core/styles";
+import { useTheme } from "@mui/material/styles";
 
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 
 import { gql, useLazyQuery, useQuery } from "@apollo/client";
 
@@ -58,51 +59,21 @@ const NEWUSERLINK = gql`
   }
 `;
 
-const styles = theme => ({
-  dialogContent: {
-    width: "700px",
-    display: "flex",
-    textAlign: "center"
-  },
-  dialogGrid: { width: "80%" },
-  shareButton: {
-    marginTop: 7,
-    right: 100,
-    position: "absolute",
-    backgroundColor: "#67b798",
-    color: "black"
-    //  marginTop: "25px"
-  },
-  button: {
-    //backgroundColor: "#e5f3f3",
-    //color: "#2b5d65"
-    color: "black"
-  },
-  generateButton: {
-    backgroundColor: "#67b798",
-    boxShadow: "none !important",
-    color: "black"
-  },
-  closeButton: {
-    marginTop: 7,
-    right: 20,
-    position: "absolute",
-    color: "#350800",
-    backgroundColor: "#efcfc5"
-  },
-  dialog: {
-    padding: 10
-  },
-  urlInput: {
-    width: 500,
-    paddingTop: 20
+const StyledTextField = styled(TextField)`
+  margin-bottom: 10;
+  & label.Mui-focused {
+    color: #5981b7;
   }
-});
+  & .MuiOutlinedInput-root {
+    &.Mui-focused fieldset {
+      border-color: #5981b7;
+    }
+  }
+`;
 
-const NewUserPopup = ({ isOpen, handleClose, client, classes }) => {
+const NewUserPopup = ({ isOpen, handleClose, client }) => {
   const [{ authKeyID, uid }] = useAppState();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [selectedRoles, setSelectedRoles] = useState([]);
 
   const [
     doesUserExist,
@@ -142,32 +113,53 @@ const NewUserPopup = ({ isOpen, handleClose, client, classes }) => {
       onClose={handleClose}
       maxWidth={"lg"}
       aria-labelledby="form-dialog-title"
+      sx={{
+        "& .MuiFormHelperText-root": { color: "red" }
+      }}
     >
       {newUserLinkData && newUserLinkData.newUserLink ? (
         <span style={{ margin: 10 }}>
           <Typography variant="body">
             Please send this link to the user you are trying to create.
           </Typography>
-          <DialogContent className={classes.dialogContent}>
+          <DialogContent
+            sx={{
+              width: "700px",
+              display: "flex",
+              textAlign: "center"
+            }}
+          >
             <FilledInput
-              style={{ width: "75%" }}
-              classes={{ input: classes.urlInput }}
+              style={{ width: "75%", width: 500 }}
               id="copyUrl"
               value={newUserLinkData.newUserLink.newUserLink}
               readonly
             />
             <Button
-              variant="outlined"
-              color="#67b798"
-              className={classes.shareButton}
+              variant="contained"
+              sx={{
+                marginTop: "7px !important",
+                right: "107px",
+                position: "absolute !important",
+                backgroundColor: "#5981b7 !important",
+                color: "white !important",
+                ":hover": {
+                  backgroundColor: "#2f4461 !important"
+                }
+              }}
               onClick={copy(newUserLinkData.newUserLink.newUserLink)}
             >
               Copy
             </Button>
             <Button
               variant="outlined"
-              color="#67b798"
-              className={classes.closeButton}
+              sx={{
+                marginTop: "7px !important",
+                right: "14px",
+                position: "absolute !important",
+                backgroundColor: "white !important",
+                color: "#4882bb !important"
+              }}
               onClick={handleClose}
             >
               Close
@@ -188,8 +180,8 @@ const NewUserPopup = ({ isOpen, handleClose, client, classes }) => {
                 .min(2, "Must be at least 2 characters")
                 .required("Name is required")
                 .matches(
-                  /^[a-zA-Z0-9]+$/,
-                  "Cannot contain special characters or spaces"
+                  /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/gi,
+                  "Cannot contain special characters"
                 ),
               email: yup
                 .string("Enter your email")
@@ -208,14 +200,14 @@ const NewUserPopup = ({ isOpen, handleClose, client, classes }) => {
                   newUser: {
                     email: values.email,
                     name: values.name,
-                    roles: selectedRoles.join(","),
+                    roles: values.roles.join(","),
                     isAdmin: isAdmin
                   }
                 }
               })
             }
             style={{ maxWidth: 450 }}
-            className={classes.root}
+            //  className={classes.root}
             autoComplete="off"
           >
             {({
@@ -230,7 +222,7 @@ const NewUserPopup = ({ isOpen, handleClose, client, classes }) => {
               <div>
                 <DialogContent>
                   <div>
-                    <TextField
+                    <StyledTextField
                       autoFocus
                       margin="dense"
                       key="name"
@@ -243,9 +235,8 @@ const NewUserPopup = ({ isOpen, handleClose, client, classes }) => {
                       error={touched.name && Boolean(errors.name)}
                       helperText={errors.name}
                       fullWidth
-                      style={{ marginBottom: 10 }}
                     />
-                    <TextField
+                    <StyledTextField
                       margin="dense"
                       key="email"
                       label="Email Address"
@@ -257,7 +248,6 @@ const NewUserPopup = ({ isOpen, handleClose, client, classes }) => {
                       }
                       error={touched.email && Boolean(errors.email)}
                       helperText={errors.email}
-                      style={{ marginBottom: 10 }}
                     />
                     <DropDownSelect
                       value={values.roles}
@@ -281,30 +271,44 @@ const NewUserPopup = ({ isOpen, handleClose, client, classes }) => {
                           checked={isAdmin}
                           onChange={() => setIsAdmin(!isAdmin)}
                           name="admin"
+                          sx={{
+                            "& .Mui-checked": {
+                              color: "#2f4461",
+                              transform: "translateX(25px) !important",
+                              "& .MuiSwitch-thumb": { color: "#2f4461" },
+                              "& .MuiSwitch-track": {
+                                backgroundColor: "#2f4461"
+                              }
+                            },
+                            "& .MuiSwitch-track": {
+                              backgroundColor: "#5981b7"
+                            }
+                          }}
                         />
                       }
-                      style={{ marginBottom: 10 }}
+                      style={{ marginBottom: 10, marginTop: 10 }}
                       label="Is Admin"
                     />
                   </div>
                 </DialogContent>
 
                 <DialogActions>
-                  <Button
-                    onClick={handleClose}
-                    variant="outlined"
-                    color="#67b798"
-                    className={classes.button}
-                  >
+                  <Button onClick={handleClose} variant="outlined">
                     Cancel
                   </Button>
                   <Button
                     onClick={handleSubmit}
                     variant="contained"
                     disabled={!isValid}
-                    className={classes.generateButton}
+                    sx={{
+                      backgroundColor: "#5981b7 !important",
+                      color: "white !important",
+                      ":hover": {
+                        backgroundColor: "#2f4461 !important"
+                      }
+                    }}
                   >
-                    Generate
+                    Next
                   </Button>
                 </DialogActions>
               </div>
@@ -315,27 +319,6 @@ const NewUserPopup = ({ isOpen, handleClose, client, classes }) => {
     </Dialog>
   );
 };
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: "flex",
-    flexWrap: "wrap"
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    width: "100%",
-    marginBottom: 10
-  },
-  chips: {
-    display: "flex",
-    flexWrap: "wrap"
-  },
-  chip: {
-    margin: 2
-  },
-  noLabel: {
-    marginTop: theme.spacing(3)
-  }
-}));
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -353,7 +336,6 @@ const DropDownSelect = ({
   selectedRoles,
   onChange
 }) => {
-  const classes = useStyles();
   const theme = useTheme();
 
   function getStyles(name, roles, theme) {
@@ -365,7 +347,10 @@ const DropDownSelect = ({
     };
   }
   return (
-    <FormControl required className={classes.formControl}>
+    <FormControl
+      required
+      sx={{ margin: 1, width: "100%", marginBottom: "10px" }}
+    >
       <InputLabel htmlFor="select-multiple-checkbox">
         Viewable Dashboards
       </InputLabel>
@@ -373,9 +358,17 @@ const DropDownSelect = ({
         multiple
         value={selectedRoles}
         onChange={onChange}
-        input={<Input id="select-multiple-chip" />}
+        input={
+          <Input
+            id="select-multiple-chip"
+            sx={{
+              ":before": { borderBottomColor: "#5981b7" },
+              ":after": { borderBottomColor: "#5981b7" }
+            }}
+          />
+        }
         renderValue={selected => (
-          <div className={classes.chips}>
+          <div style={{ display: "flex", flexWrap: "wrap" }}>
             {selected.map(value => (
               <Chip
                 onMouseDown={event => {
@@ -386,7 +379,7 @@ const DropDownSelect = ({
                 }}
                 key={value}
                 label={value}
-                className={classes.chip}
+                sx={{ display: "flex", flexWrap: "wrap", marginRight: "5px" }}
               />
             ))}
           </div>
@@ -408,7 +401,14 @@ const DropDownSelect = ({
             value={name}
             style={getStyles(name, selectedRoles, theme)}
           >
-            <Checkbox checked={selectedRoles.indexOf(name) > -1} />
+            <Checkbox
+              checked={selectedRoles.indexOf(name) > -1}
+              sx={{
+                "&.Mui-checked": {
+                  color: "#5981b7"
+                }
+              }}
+            />
             <ListItemText primary={name} />
           </MenuItem>
         ))}
@@ -417,4 +417,4 @@ const DropDownSelect = ({
   );
 };
 
-export default withStyles(styles)(withRouter(NewUserPopup));
+export default withRouter(NewUserPopup);

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 
 import _ from "lodash";
+import { styled } from "@mui/system";
 
 import {
   Checkbox,
   FormControl,
-  FormControlLabel,
   Grid,
   Input,
   ListItemText,
@@ -14,13 +14,23 @@ import {
   Slider,
   Switch,
   Typography
-} from "@material-ui/core";
+} from "@mui/material";
 
 import { useStatisticsState } from "../DashboardState/statsState";
 import { heatmapConfig } from "../Heatmap/config";
+const secondary = "#f1c023";
+
+const StyledSlider = styled(Slider)(({ theme }) => ({
+  color: "#f1c023 !important",
+  width: "100%"
+}));
+
+const StyledTitles = styled(Typography)(({ theme }) => ({
+  marginBottom: 0,
+  marginLeft: "-20px !important"
+}));
 
 const DataFilters = ({
-  classes,
   update,
   analysis,
   experimentalConditions,
@@ -67,24 +77,26 @@ const DataFilters = ({
     <Grid
       container
       direction="column"
-      justify="flex-start"
+      justifyContent="flex-start"
       alignItems="flex-start"
-      style={{ width: "100%" }}
+      style={{ width: "100%", margin: "10px !important" }}
       key={key + "grid"}
     >
-      <Grid item className={classes.gridSlider} key={key + "gridSlider"}>
-        <Typography
+      <Grid
+        item
+        sx={{ width: "100%", marginBottom: "35px !important" }}
+        key={key + "gridSlider"}
+      >
+        <StyledTitles
           id="discrete-slider"
           gutterBottom
-          style={{ marginBottom: 0 }}
           key={key + "qualityTitle"}
         >
           Quality
-        </Typography>
-        <Slider
+        </StyledTitles>
+        <StyledSlider
           key={key + "qualitySlider"}
-          className={classes.slider}
-          color={"secondary"}
+          sx={{ color: "#f1c023 !important", width: "100%" }}
           value={qualityMenuValue}
           disabled={isDisabled}
           onChange={(event, newValue) => setQualityMenuValue(newValue)}
@@ -106,71 +118,54 @@ const DataFilters = ({
           max={1.0}
         />
       </Grid>
-      <Grid item className={classes.gridSlider} key={key + "filterGrid"}>
-        <Typography
-          id="discrete-slider"
-          gutterBottom
-          style={{ marginBottom: 0 }}
-          key={key + "filterTitle"}
-        >
-          Filter Contaminated
-        </Typography>
-        <FormControl
-          disabled={isDisabled}
-          variant="outlined"
-          className={classes.formControl}
-          key={key + "filterFormControl"}
-        >
-          <FormControlLabel
-            control={
-              <Switch
-                checked={contaminatedMenuValue}
-                onChange={() => {
-                  setContaminatedMenuValue(!contaminatedMenuValue);
-                  /*    setParamObj["is_contaminated"] = {
-                    param: "is_contaminated",
-                    value: contaminatedMenuValue.toString()
-                  };*/
-                  update(
-                    {
-                      isContaminated: contaminatedMenuValue
-                    },
-                    "CONTIMATED_UPDATE"
-                  );
-                }}
-              />
-            }
-          />
-        </FormControl>
-      </Grid>
       <Grid
         item
-        className={classes.gridSlider}
+        sx={{ width: "100%", marginBottom: "35px !important" }}
         key={key + "experimentalCondition"}
       >
-        <Typography
+        <StyledTitles
           id="discrete-slider"
           key={key + "experimentalConditionTitle"}
           gutterBottom
-          style={{ marginBottom: 0 }}
         >
           Experimental Conditions
-        </Typography>
+        </StyledTitles>
         <FormControl
           key={key + "expConditionFormControl"}
           variant="outlined"
-          className={classes.formControl}
+          sx={{ width: "100%" }}
           disabled={isDisabled}
         >
           <Select
             key={key + "expConditionSelect"}
+            sx={{
+              width: "100%",
+              color: "black",
+              "& .Mui-checked": {
+                color: "secondary.main !important"
+              },
+              "&:before": {
+                borderColor: "secondary.main !important"
+              },
+              "&:after": {
+                borderColor: "secondary.main !important",
+                borderBottom: "2px solid secondary.main !important"
+              },
+
+              ":before": { borderBottomColor: "2px solid #f1c023" },
+              ":after": { borderBottomColor: "#f1c023" }
+            }}
             value={experimentalMenuValue || []}
             name="experimentalConditionSelection"
             displayEmpty
             input={<Input />}
             multiple
             renderValue={selected =>
-              selected.length > 1 ? selected.join(",") : selected
+              selected.length > 1
+                ? selected.join(",")
+                : selected.length == 1
+                ? selected
+                : "None Selected"
             }
             onChange={event => {
               const value = event.target.value;
@@ -197,6 +192,12 @@ const DataFilters = ({
           >
             <MenuItem value="" key={"none"}>
               <Checkbox
+                sx={{
+                  color: secondary,
+                  "&.Mui-checked": {
+                    color: secondary
+                  }
+                }}
                 checked={
                   experimentalMenuValue === null ||
                   experimentalMenuValue.length === 0
@@ -208,6 +209,12 @@ const DataFilters = ({
               ? experimentalConditions[0]["types"].map((option, index) => (
                   <MenuItem key={"expCondition-" + option} value={option}>
                     <Checkbox
+                      sx={{
+                        color: secondary,
+                        "&.Mui-checked": {
+                          color: secondary
+                        }
+                      }}
                       checked={
                         experimentalMenuValue
                           ? experimentalMenuValue.indexOf(option) > -1
@@ -224,14 +231,46 @@ const DataFilters = ({
       {numericalDataFilters && (
         <NumericalDataFilters
           filters={numericalDataFilters}
-          classes={classes}
           isDisabled={isDisabled}
         />
       )}
     </Grid>
   ];
 };
-const NumericalDataFilters = ({ filters, classes, isDisabled }) => {
+/*      <Grid item className={classes.gridSlider} key={key + "filterGrid"}>
+        <Typography
+          id="discrete-slider"
+          gutterBottom
+          style={{ marginBottom: 0 }}
+          key={key + "filterTitle"}
+        >
+          Filter Contaminated
+        </Typography>
+        <FormControl
+          disabled={isDisabled}
+          variant="outlined"
+          className={classes.formControl}
+          key={key + "filterFormControl"}
+        >
+          <FormControlLabel
+            control={
+              <Switch
+                checked={contaminatedMenuValue}
+                onChange={() => {
+                  setContaminatedMenuValue(!contaminatedMenuValue);
+                  update(
+                    {
+                      isContaminated: contaminatedMenuValue
+                    },
+                    "CONTIMATED_UPDATE"
+                  );
+                }}
+              />
+            }
+          />
+        </FormControl>
+      </Grid>*/
+const NumericalDataFilters = ({ filters, isDisabled }) => {
   const [
     { axisChange, absoluteMinMaxDataFilters },
     dispatch
@@ -312,14 +351,18 @@ const NumericalDataFilters = ({ filters, classes, isDisabled }) => {
         const formattedMax = numFormatter(defaultValues[filter["name"]][1]);
 
         return (
-          <Grid item key={filter["name"] + "-grid"} style={{ width: "100%" }}>
-            <Typography
+          <Grid
+            item
+            key={filter["name"] + "-grid"}
+            sx={{ width: "100%", marginBottom: "35px !important" }}
+          >
+            <StyledTitles
               id={filter["name"] + "range-slider-title"}
               key={filter["name"] + "range-slider-title"}
               gutterBottom
             >
               {filter["label"]}
-            </Typography>
+            </StyledTitles>
             <Typography
               id="breath-local-slider"
               gutterBottom
@@ -352,10 +395,10 @@ const NumericalDataFilters = ({ filters, classes, isDisabled }) => {
             >
               Range Controls
             </Typography>
-            <Slider
+            <StyledSlider
               key={filter["name"] + "-slider"}
               value={defaultValues[filter["name"]]}
-              className={classes.slider}
+              //className={classes.slider}
               color={"secondary"}
               disabled={isDisabled}
               marks={[

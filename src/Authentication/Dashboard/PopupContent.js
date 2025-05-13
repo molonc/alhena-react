@@ -1,106 +1,30 @@
 import React, { useState, useEffect } from "react";
 import _ from "lodash";
 
-//import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-
 import { Formik } from "formik";
 import * as yup from "yup";
 
-import { makeStyles } from "@material-ui/core/styles";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import TextField from "@mui/material/TextField";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import MuiAlert from "@mui/material/Alert";
 
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import TextField from "@material-ui/core/TextField";
-import Stepper from "@material-ui/core/Stepper";
-import Step from "@material-ui/core/Step";
-import StepLabel from "@material-ui/core/StepLabel";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import MuiAlert from "@material-ui/lab/Alert";
-
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Checkbox from "@material-ui/core/Checkbox";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Checkbox from "@mui/material/Checkbox";
 
 import LoadingCircle from "../ProgressCircle.js";
 
 import TransferList from "../TransferList.js";
 
-const useStylesStepper = makeStyles(theme => ({
-  root: {
-    width: "100%",
-    minHeight: 300
-  },
-  buttonGrid: { marginTop: 25, marginRight: 25 },
-  backButton: {
-    marginTop: theme.spacing(1),
-    marginRight: theme.spacing(3)
-  },
-  instructions: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1)
-  },
-  dialogButtons: {
-    marginTop: 20,
-    float: "right"
-  },
-  cancelButton: { marginLeft: "25px", marginTop: 20 },
-  nextButton: {
-    boxShadow: "none !important"
-  }
-}));
-const useListStyles = makeStyles(theme => ({
-  root: {
-    width: "100%",
-    margin: 0,
-    height: 250,
-    overflowY: "scroll",
-    backgroundColor: theme.palette.background.paper
-  },
-  columnPaper: { width: "50%", margin: "auto" }
-}));
-const useStyles = makeStyles(theme => ({
-  button: { color: "black", backgroundColor: theme.palette.secondary.main },
-  textDialogContent: {
-    padding: "0px 10px",
-    paddingTop: "40px !important",
-    paddingLeft: 50
-  },
-  dialogContent: {
-    padding: "0px 10px",
-    paddingTop: "0px !important",
-    paddingLeft: 50
-  },
-  dialogTitle: { paddingBottom: 0, marginLeft: "50px", fontSize: 15 },
-  dialogWrapper: {
-    height: 200,
-    width: 250,
-    margin: "auto",
-    left: "25%",
-    position: "absolute"
-  },
-  icon: { fontSize: "6em", position: "absolute" },
-  iconButton: { top: "65%", left: "45%" },
-  textField: {
-    width: 350,
-    left: 10,
-    marginBottom: 10,
-    "&$.MuiOutlinedInput-input": { padding: "15px 12px" }
-  },
-  searchInput: {
-    padding: "15px 12px"
-  },
-  stepper: { padding: "0 !important", iconColor: "#4e89bb" },
-  textValidator: {
-    paddingBottom: 0,
-    width: "80%",
-    marginLeft: 60,
-    marginTop: -20
-  }
-}));
 function getSteps() {
   return ["Dashboard Name", "Add Indices", "Show/Hide Metadata", "Add Users"];
 }
@@ -122,8 +46,6 @@ const PopUpContent = ({
   selectedDashboardUsers,
   allDashboardsUsers
 }) => {
-  const classes = useStylesStepper();
-
   const [selectedIndices, setSelectedIndices] = useState(
     alreadySelectedIndices
   );
@@ -165,6 +87,8 @@ const PopUpContent = ({
       setIsDisabled(true);
     } else if (activeStep === 1 && selectedIndices.length > 0) {
       setIsDisabled(false);
+    } else if (activeStep === 1 && selectedIndices.length === 0) {
+      setIsDisabled(true);
     } else if (activeStep === 2 && selectedColumns.length > 0) {
       setIsDisabled(false);
     } else if (activeStep === 2 && selectedColumns.length === 0) {
@@ -189,7 +113,7 @@ const PopUpContent = ({
             margin: "auto"
           }}
         >
-          <LoadingContent classes={classes} isSent={isSent} />
+          <LoadingContent isSent={isSent} />
         </DialogContent>
       ) : (
         <Grid
@@ -197,20 +121,28 @@ const PopUpContent = ({
           direction="column"
           alignItems="stretch"
           spacing={0}
-          className={classes.root}
+          sx={{ marginTop: "50px" }}
         >
           <Stepper
             activeStep={activeStep}
             alternativeLabel
-            className={classes.stepper}
+            sx={{ padding: "0 !important", iconColor: "primary.main" }}
           >
             {steps.map(label => (
-              <Step key={label}>
+              <Step
+                key={label}
+                sx={{
+                  "& .Mui-completed": {
+                    color: "#5981b7 !important"
+                  },
+                  "& .Mui-active": { color: "#5981b7 !important" }
+                }}
+              >
                 <StepLabel>{label}</StepLabel>
               </Step>
             ))}
           </Stepper>
-          <Grid item>
+          <Grid item sx={{ width: "100%" }}>
             {activeStep === 0 && (
               <NameContent
                 isEdit={isEdit}
@@ -243,28 +175,37 @@ const PopUpContent = ({
               />
             )}
           </Grid>
-          <Grid item className={classes.buttonGrid}>
-            <div className={classes.footer}>
+          <Grid item sx={{ margin: "10px" }}>
+            <div>
               <Button
                 onClick={handleClose}
-                className={classes.cancelButton}
+                sx={{ color: "primary.main !important" }}
                 variant="outlined"
               >
                 Cancel
               </Button>
-              <div className={classes.dialogButtons}>
+              <div style={{ float: "right" }}>
                 <div>
                   <Button
                     disabled={activeStep === 0}
                     onClick={handleBack}
-                    className={classes.backButton}
+                    sx={
+                      {
+                        //  marginTop: 1,
+                        //  marginRight: 3
+                      }
+                    }
                   >
                     Back
                   </Button>
                   <Button
                     variant="contained"
                     color="primary"
-                    className={classes.nextButton}
+                    sx={{
+                      boxShadow: "none !important",
+                      color: "white",
+                      backgroundColor: "primary.main !important"
+                    }}
                     disabled={isActionDisabled}
                     onClick={async () => {
                       if (activeStep === steps.length - 1) {
@@ -318,7 +259,6 @@ const DynamicColumnsContent = ({
   setSelectedColumns,
   selectedColumns
 }) => {
-  const classes = useListStyles();
   const [checked, setChecked] = useState(
     selectedColumns.length > 0 ? selectedColumns : ["dashboard_id"]
   );
@@ -336,8 +276,21 @@ const DynamicColumnsContent = ({
     setChecked(newChecked);
   };
   return (
-    <Paper className={classes.columnPaper} key={"addColumnToDashboardPaper"}>
-      <List className={classes.root} key={"addColumnToDashboardList"}>
+    <Paper
+      sx={{ margin: "10px", margin: "auto", width: "50%" }}
+      key={"addColumnToDashboardPaper"}
+    >
+      <Alert severity="info">Select metadata columns for this project</Alert>
+      <List
+        sx={{
+          //  width: "100%",
+          margin: 0,
+          height: 250,
+          overflowY: "scroll",
+          backgroundColor: "background.paper"
+        }}
+        key={"addColumnToDashboardList"}
+      >
         {columns.map(value => {
           const labelId = `checkbox-list-label-${value.type}`;
 
@@ -373,16 +326,13 @@ const DynamicColumnsContent = ({
   );
 };
 const NameContent = ({ isEdit, name, handleNameChange }) => {
-  const classes = useStyles();
   return (
-    //  <ValidatorForm key={"validForm"} onSubmit={() => {}}>
-
     <Formik
       validationSchema={yup.object({
         name: yup.string().required("This field is required")
       })}
       initialValues={{
-        name: ""
+        name: name
       }}
       autoComplete="off"
     >
@@ -395,7 +345,7 @@ const NameContent = ({ isEdit, name, handleNameChange }) => {
         setFieldValue,
         isValid
       }) => (
-        <DialogContent className={classes.textDialogContent}>
+        <DialogContent sx={{ padding: "0px 50px" }}>
           <TextField
             key={"dialogName"}
             autoFocus
@@ -404,16 +354,21 @@ const NameContent = ({ isEdit, name, handleNameChange }) => {
             label="Name"
             type="text"
             value={values.name}
-            disabled={isValid}
-            onChange={event => setFieldValue("name", event.target.value)}
+            onChange={event => {
+              setFieldValue("name", event.target.value);
+              handleNameChange(event);
+            }}
             required
-            className={classes.textValidator}
+            sx={{
+              width: "80%",
+              marginLeft: "71px !important",
+              color: "#5981b7 !important"
+            }}
           />
         </DialogContent>
       )}
     </Formik>
   );
-  //  </ValidatorForm>
 };
 const TransferListContent = ({
   isEdit,
@@ -423,17 +378,30 @@ const TransferListContent = ({
   allIndices,
   alreadySelectedIndices
 }) => {
-  const classes = useStyles();
   return (
-    <DialogContent className={classes.dialogContent}>
+    <DialogContent
+      sx={{
+        padding: "0px 10px",
+        paddingTop: "0px !important",
+        paddingLeft: "50px",
+        width: "100%",
+        marginBottom: "15px"
+      }}
+    >
       <TextField
         id="outlined-search"
         label="Search Analyses"
         type="search"
         variant="outlined"
         value={searchValue}
-        className={classes.textField}
-        InputProps={{ classes: { input: classes.searchInput } }}
+        sx={{
+          width: 350,
+          //left: 10,
+          marginBottom: "10px",
+          marginLeft: "4px",
+          "&$.MuiOutlinedInput-input": { padding: "15px 12px" }
+        }}
+        InputProps={{ classes: { input: { padding: "15px 12px" } } }}
         onChange={event => setSearchValue(event.target.value)}
       />
       <TransferList
@@ -451,7 +419,6 @@ const UserDashboardContent = ({
   setSelectedUsers,
   selectedUsers
 }) => {
-  const classes = useListStyles();
   const [checked, setChecked] = useState(selectedUsers);
 
   const handleToggle = value => () => {
@@ -467,11 +434,23 @@ const UserDashboardContent = ({
     setChecked(newChecked);
   };
   return (
-    <Paper className={classes.columnPaper} key={"addUserToDashboardPaper"}>
+    <Paper
+      sx={{ width: "50%", margin: "auto" }}
+      key={"addUserToDashboardPaper"}
+    >
       <Alert severity="info">
         * - Admins are added to all dashboards by default
       </Alert>
-      <List className={classes.root} key={"addUserToDashboardList"}>
+      <List
+        sx={{
+          width: "100%",
+          margin: 0,
+          height: 250,
+          overflowY: "scroll",
+          backgroundColor: "background.paper"
+        }}
+        key={"addUserToDashboardList"}
+      >
         {allUsers
           .sort((a, b) => a.full_name.localeCompare(b.full_name))
           .map(value => {
@@ -516,8 +495,16 @@ const UserDashboardContent = ({
     </Paper>
   );
 };
-const LoadingContent = ({ classes, isSent }) => (
-  <div className={classes.dialogWrapper}>
+const LoadingContent = ({ isSent }) => (
+  <div
+    style={{
+      height: 200,
+      width: 250,
+      margin: "auto",
+      left: "25%",
+      position: "absolute"
+    }}
+  >
     <LoadingCircle overRideStroke={6} />
   </div>
 );

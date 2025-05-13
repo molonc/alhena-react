@@ -1,50 +1,17 @@
 import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
 import DataGrid from "react-data-grid";
-import TextField from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 import { matchSorter } from "match-sorter";
 
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import Autocomplete from "@mui/material/Autocomplete";
 
-import { withStyles } from "@material-ui/styles";
 import { useDashboardState } from "../ProjectState/dashboardState";
+import table from "./table.css";
 
-const styles = {
-  root: {
-    height: 600,
-    color: "white",
-    backgroundColor: "#afafafd9",
-    cursor: "pointer",
-    fontWeight: "normal",
-    resize: "horizontal",
-    overflowX: "overlay",
-    overflowY: "scroll",
-    borderRight: "1px solid"
-  },
-  title: {
-    float: "left",
-    color: "white",
-    margin: 0,
-    padding: 0,
-    marginLeft: 50
-  },
-  input: { color: "#23bbbb !important" },
-  wrapper: {
-    height: 750,
-    width: 1200,
-    "& div[role=grid]": { borderRadius: 5 },
-    "& div": { backgroundColor: "#90909380", padding: 0 }
-  },
-  header: { backgroundColor: "#afafafd9" },
-  search: {
-    marginRight: "100vw-1200px/2",
-    marginBottom: 10
-  }
-};
-
-const Table = ({ handleForwardStep, classes, columns, rows, project }) => {
+const Table = ({ handleForwardStep, columns, rows, project }) => {
   const [{}, dispatch] = useDashboardState();
   const [searchValue, setValue] = useState(null);
   const [tableRows, setTableRows] = useState([]);
@@ -62,11 +29,11 @@ const Table = ({ handleForwardStep, classes, columns, rows, project }) => {
         fontSize: 18,
         color: "black",
         margin: 0,
-        paddingLeft: 10,
-        backgroundColor: "#8aa3a7"
+        paddingLeft: 5,
+        backgroundColor: "#e5b151"
       }}
     >
-      {column["key"]}
+      {column["name"]}
     </p>
   );
 
@@ -74,8 +41,13 @@ const Table = ({ handleForwardStep, classes, columns, rows, project }) => {
     column["key"] === "sample_id" ? (
       <a
         id={"link-" + row["dashboard_id"] + "-" + row["sample_id"]}
-        style={{ color: "white", fontSize: 18, paddingLeft: 5 }}
-        href={"javascript:;"}
+        style={{
+          color: "black",
+          fontSize: 18,
+          paddingLeft: 5,
+          cursor: "pointer",
+          textDecoration: "underline"
+        }}
         onMouseEnter={function(event, row) {
           d3.select("#" + event.target.id).style("font-weight", "bold");
         }}
@@ -97,7 +69,7 @@ const Table = ({ handleForwardStep, classes, columns, rows, project }) => {
         style={{
           cursor: "text",
           fontSize: 18,
-          color: "white",
+          color: "black",
           margin: 0,
           paddingLeft: 5,
           userSelect: "all"
@@ -113,19 +85,37 @@ const Table = ({ handleForwardStep, classes, columns, rows, project }) => {
     });
 
   return (
-    <Grid container direction="column" justify="flex-start" alignItems="center">
+    <Grid
+      container
+      direction="column"
+      justifyContent="flex-start"
+      alignItems="center"
+    >
       <Grid
         item
         container
         direction="row"
-        justify="space-between"
+        justifyContent="space-between"
         alignItems="center"
       >
-        <Typography variant={"h3"} className={classes.title}>
+        <Typography
+          variant={"h3"}
+          sx={{
+            float: "left",
+            color: "black",
+            m: 0,
+            p: 0,
+            ml: "50px !important",
+            fontFamily: "MyFont"
+          }}
+        >
           {project}
         </Typography>
         <Autocomplete
-          className={classes.search}
+          sx={{
+            marginRight: "100vw-1200px/2 !important",
+            marginBottom: "10px !important"
+          }}
           value={searchValue}
           onChange={(event, newValue) => {
             if (typeof newValue === "string") {
@@ -163,13 +153,24 @@ const Table = ({ handleForwardStep, classes, columns, rows, project }) => {
               label="Search"
               variant="outlined"
               InputProps={{
-                className: classes.input
+                className: table.input
               }}
             />
           )}
         />
       </Grid>
-      <div className={classes.wrapper}>
+      <div
+        style={{
+          height: 700,
+          width: "85vw",
+          marginLeft: 50,
+          "& div[role=grid]": { borderRadius: 5 },
+          "& div": { backgroundColor: "#90909380", padding: 0 },
+          "& div[role=columnheader]": { padding: 0 }
+        }}
+        className={table.table}
+        id={"searchTable"}
+      >
         <DataGrid
           rows={tableRows.map(row => ({ ...row, id: row["dashboard_id"] }))}
           rowCount={tableRows.length}
@@ -185,7 +186,15 @@ const Table = ({ handleForwardStep, classes, columns, rows, project }) => {
           }))}
           rowHeight={40}
           headerRowHeight={50}
-          className={classes.root}
+          className={table.root}
+          style={{
+            height: "100%",
+            width: "100%",
+            padding: 0,
+            border: "0px !important",
+            "& div[role=columnheader]": { padding: 0 },
+            "& div": { backgroundColor: "#90909380", padding: 0 }
+          }}
           hideFooter
           draggable={true}
           scrollBarSize={30}
@@ -194,4 +203,4 @@ const Table = ({ handleForwardStep, classes, columns, rows, project }) => {
     </Grid>
   );
 };
-export default withStyles(styles)(Table);
+export default Table;

@@ -23,8 +23,9 @@ import UpdatePasswordVerification from "./Authentication/NewUser/UpdatePasswordV
 
 import "./App.css";
 import { theme } from "./theme/theme.js";
-import { MuiThemeProvider } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
+import { StyledEngineProvider } from "@mui/styled-engine";
+import CssBaseline from "@mui/material/CssBaseline";
 
 const App = () => {
   const [{ authKeyID }, dispatch] = useAppState();
@@ -51,10 +52,13 @@ const App = () => {
       }
     });
   }, [locationKeys]);
-
+  // /
+  //  <ThemeProvider theme={theme}>
+  //    <StyledEngineProvider injectFirst>
+  //</StyledEngineProvider>
+  //</ThemeProvider>
   return (
-    <MuiThemeProvider theme={theme}>
-      <CssBaseline />
+    <span>
       <Switch>
         <Route
           path="/"
@@ -101,7 +105,10 @@ const App = () => {
         <UnauthenticatedRoute path="/forgotPassword">
           <ForgotPasswordWrapper />
         </UnauthenticatedRoute>
-        <PrivateRoute key="ticket" path="/dashboards/:ticket/:copyLink">
+        <PrivateRoute key="copylink" path="/dashboards/:ticket/:copyLink">
+          <DashboardWrapper />
+        </PrivateRoute>
+        <PrivateRoute key="analysis" path="/dashboards:analysis">
           <DashboardWrapper />
         </PrivateRoute>
         <PrivateRoute key="ticket" path="/dashboards/:ticket">
@@ -115,9 +122,9 @@ const App = () => {
         </AdminRoute>
       </Switch>
       <div style={{ position: "absolute", bottom: 10, right: 10 }}>
-        Version 1.052
+        Version 1.06
       </div>
-    </MuiThemeProvider>
+    </span>
   );
 };
 

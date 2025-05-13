@@ -1,47 +1,23 @@
 import React, { useState } from "react";
 import * as d3 from "d3";
 
-import { Dialog, Grid } from "@material-ui/core";
+import { Dialog, Grid } from "@mui/material";
 
-import Button from "@material-ui/core/Button";
-import DialogContent from "@material-ui/core/DialogContent";
-import ToggleButton from "@material-ui/lab/ToggleButton";
+import Button from "@mui/material/Button";
+import DialogContent from "@mui/material/DialogContent";
+import ToggleButton from "@mui/material/ToggleButton";
 
-import CheckIcon from "@material-ui/icons/Check";
+import CheckIcon from "@mui/icons-material/Check";
 
-import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { heatmapConfig } from "../Dashboard/Heatmap/config.js";
 
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import { jsPDF } from "jspdf";
 import canvg from "canvg";
 
 const pageWidthPixel = 595;
-const styles = theme => ({
-  dialogContent: {
-    width: 350,
-    height: 375,
-    textAlign: "center"
-  },
-  exportButton: {
-    right: 100,
-    position: "absolute",
-    backgroundColor: "#e5f3f3",
-    color: "#2b5d65"
-  },
-  closeButton: {
-    right: 20,
-    position: "absolute",
-    color: "#350800",
-    backgroundColor: "#efcfc5"
-  }
-});
-const ExportPopup = ({
-  setOpenExportPopup,
-  openExportPopup,
-  client,
-  classes
-}) => {
+
+const ExportPopup = ({ setOpenExportPopup, openExportPopup, client }) => {
   const [selected, setSelected] = useState([]);
 
   const assembleHeatmapExport = doc => {
@@ -123,11 +99,13 @@ const ExportPopup = ({
       onClose={() => setOpenExportPopup()}
       aria-labelledby="form-dialog-title"
     >
-      <DialogContent className={classes.dialogContent}>
+      <DialogContent
+        sx={{ width: 350, height: 375, textAlign: "center", margin: "10px" }}
+      >
         <Grid
           container
           direction="column"
-          justify="flex-start"
+          justifyContent="flex-start"
           alignItems="flex-start"
         >
           <Typography variant="body">Plots available to export</Typography>
@@ -135,10 +113,10 @@ const ExportPopup = ({
           <Grid
             container
             direction="column"
-            justify="flex-start"
+            justifyContent="flex-start"
             alignItems="flex-start"
           >
-            <Grid item>
+            <Grid item sx={{ marginBottom: "10px" }}>
               <PlotItem
                 name="Heatmap"
                 disabled={false}
@@ -146,7 +124,7 @@ const ExportPopup = ({
                 setSelected={choices => setSelected([...choices])}
               />
             </Grid>
-            <Grid item>
+            <Grid item sx={{ marginBottom: "10px" }}>
               <PlotItem
                 name="Scatterplot"
                 disabled={true}
@@ -154,7 +132,7 @@ const ExportPopup = ({
                 setSelected={choices => setSelected([...choices])}
               />
             </Grid>
-            <Grid item>
+            <Grid item sx={{ marginBottom: "10px" }}>
               <PlotItem
                 name="GC Bias"
                 disabled={true}
@@ -162,7 +140,7 @@ const ExportPopup = ({
                 setSelected={choices => setSelected([...choices])}
               />
             </Grid>
-            <Grid item>
+            <Grid item sx={{ marginBottom: "10px" }}>
               <PlotItem
                 name="ChipHeatmap"
                 disabled={true}
@@ -170,7 +148,7 @@ const ExportPopup = ({
                 setSelected={choices => setSelected([...choices])}
               />
             </Grid>
-            <Grid item>
+            <Grid item sx={{ marginBottom: "10px" }}>
               <PlotItem
                 name="Violin"
                 disabled={true}
@@ -183,7 +161,17 @@ const ExportPopup = ({
             <Button
               variant="outlined"
               color="primary"
-              className={classes.exportButton}
+              disabled={selected.length > 0}
+              sx={{
+                right: 100,
+                position: "absolute",
+                marginRight: "10px",
+                backgroundColor: "#5981b7 !important",
+                color: "white !important",
+                ":hover": {
+                  backgroundColor: "#2f4461 !important"
+                }
+              }}
               onClick={() => {
                 exportSelected(selected);
                 setOpenExportPopup();
@@ -194,7 +182,12 @@ const ExportPopup = ({
             <Button
               variant="outlined"
               color="primary"
-              className={classes.closeButton}
+              sx={{
+                right: 20,
+                position: "absolute",
+                color: "#5981b7 !important",
+                border: "1px solid #5981b7 !important"
+              }}
               onClick={() => setOpenExportPopup()}
             >
               Close
@@ -205,49 +198,43 @@ const ExportPopup = ({
     </Dialog>
   );
 };
-const useStyles = makeStyles(theme => ({
-  selected: {
-    backgroundColor: "#a1c1c0 !important"
-  },
-  plotNameWrapper: { marginTop: 15 },
-  plotName: { margin: 10 },
-  disabledPlotName: { margin: 10, color: "grey" },
-  gridItem: { marginBottom: 10 }
-}));
-const PlotItem = ({ name, setSelected, selected, disabled }) => {
-  const classes = useStyles();
 
-  return (
-    <Grid
-      container
-      direction="row"
-      justify="flex-start"
-      alignItems="flex-start"
-    >
-      <Grid item className={classes.gridItem}>
-        <ToggleButton
-          disabled={disabled}
-          classes={{ selected: classes.selected }}
-          value="check"
-          selected={selected.indexOf(name) !== -1}
-          onChange={() => {
-            selected.indexOf(name) === -1
-              ? setSelected([...selected, name])
-              : setSelected([]);
-          }}
-        >
-          <CheckIcon />
-        </ToggleButton>
-      </Grid>
-      <Grid item className={classes.plotNameWrapper}>
-        <Typography
-          variant="h7"
-          className={disabled ? classes.disabledPlotName : classes.plotName}
-        >
-          {name}
-        </Typography>
-      </Grid>
+const PlotItem = ({ name, setSelected, selected, disabled }) => (
+  <Grid
+    container
+    direction="row"
+    justifyContent="flex-start"
+    alignItems="flex-start"
+  >
+    <Grid item>
+      <ToggleButton
+        disabled={disabled}
+        sx={{
+          "&.Mui-selected, &.Mui-selected:hover": {
+            backgroundColor: "#7496c3 !important",
+            color: "white"
+          }
+        }}
+        value="check"
+        selected={selected.indexOf(name) !== -1}
+        onChange={() => {
+          selected.indexOf(name) === -1
+            ? setSelected([...selected, name])
+            : setSelected([]);
+        }}
+      >
+        <CheckIcon />
+      </ToggleButton>
     </Grid>
-  );
-};
-export default withStyles(styles)(ExportPopup);
+    <Grid item sx={{ marginTop: "15px" }}>
+      <Typography
+        variant="h7"
+        sx={disabled ? { margin: "10px", color: "grey" } : { margin: "10px" }}
+      >
+        {name}
+      </Typography>
+    </Grid>
+  </Grid>
+);
+
+export default ExportPopup;

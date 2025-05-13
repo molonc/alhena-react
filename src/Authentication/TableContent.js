@@ -1,21 +1,18 @@
 import React, { useState } from "react";
-import { withStyles } from "@material-ui/styles";
+import styled from "styled-components";
 
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TablePagination from "@material-ui/core/TablePagination";
-
-import Checkbox from "@material-ui/core/Checkbox";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import Input from "@material-ui/core/Input";
-import FormControl from "@material-ui/core/FormControl";
-import Switch from "@material-ui/core/Switch";
-
-import clsx from "clsx";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TablePagination from "@mui/material/TablePagination";
+import Checkbox from "@mui/material/Checkbox";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Input from "@mui/material/Input";
+import FormControl from "@mui/material/FormControl";
+import Switch from "@mui/material/Switch";
 
 const rowLabels = {
   username: "Username",
@@ -29,85 +26,15 @@ const rowLabels = {
 
 const editableRows = { roles: true, isAdmin: true };
 
-const styles = theme => ({
-  table: {
-    width: "90%",
-    margin: "auto",
-    minWidth: 650
-    //marginTop: 25
-  },
-  select: {
-    "&:before": {
-      borderColor: "#ffffff"
-    }
-  },
-  editingRow: { height: 60 },
-  tableRowIndex0: {
-    backgroundColor: theme.palette.primary.dark,
-    color: "white",
-    "&$selected, &$selected:hover": {
-      backgroundColor: "#ffffff"
-    }
-  },
-  checkBox: {
-    color: "#443d3d !important",
-    "$selected &": {
-      color: "#443d3d"
-    }
-  },
-  checkBox1: {
-    color: "#000000 !important",
-    "$selected &": {
-      color: "#000000"
-    }
-  },
-  otherCol: {
-    //width: "15%"
-  },
-  adminCol: { width: "10%" },
-  roleCol: { width: "25%" },
-  checkBoxCol: {
-    //width: "5%"
-  },
-  tableRowIndex1: {
-    backgroundColor: theme.palette.primary.main,
-    color: "#000000",
-    "&$selected, &$selected:hover": {
-      backgroundColor: "rgba(232, 232, 232, 0.43)"
-    }
-  },
-  selected: {},
-  tableCell: {
-    whiteSpace: "normal",
-    wordWrap: "break-word",
-    maxWidth: "100px",
-    fontSize: 18
-  },
-  selectedTableCell: {
-    height: 60,
-    fontSize: 20,
-    whiteSpace: "normal",
-    wordWrap: "break-word",
-    maxWidth: "200px",
-    backgroundColor: "#11151d40"
-  },
-  tableHeader: {
-    fontSize: 18,
-    padding: 15,
-    fontWeight: "bold"
-    //backgroundColor: "#ffffff94"
-  },
-  tablePagination: {
-    fontWeight: "bold"
-  },
-  toolbar: {},
-  hide: {
-    display: "none"
+const StyledCheckBox = styled(Checkbox)(({ theme }) => ({
+  color: "#443d3d !important",
+  "$selected &": {
+    color: "#443d3d"
   }
-});
+}));
+
 const adminMapping = { false: "", true: "Yes" };
 const TableContent = ({
-  classes,
   history,
   data,
   handleRowClick,
@@ -131,16 +58,22 @@ const TableContent = ({
     data.length > 0
       ? Object.keys(data[0]).filter(heading => heading !== "__typename")
       : [];
-  const colorClass = classes.checkBox;
 
-  const editTextRows = (row, heading, allRolesLength) => {
+  const editTextRows = (row, heading, allRolesLength, isItemSelected) => {
     if (Array.isArray(row[heading])) {
+      const longForm = row[heading].filter(d => d !== "").join(", ");
       if (heading === "roles") {
-        return row[heading].length === allRolesLength
-          ? "All"
-          : row[heading].join(", ");
+        if (row[heading].length === allRolesLength) {
+          return "All";
+        } else {
+          if (longForm.length <= 15 || isItemSelected) {
+            return longForm;
+          } else {
+            return longForm.substring(0, 15) + "...";
+          }
+        }
       } else {
-        return row[heading].join(", ");
+        return longForm + "...";
       }
     } else {
       return adminMapping.hasOwnProperty(row[heading])
@@ -148,15 +81,19 @@ const TableContent = ({
         : row[heading];
     }
   };
-  const getWidthClass = heading =>
-    heading === "role"
-      ? classes.roleCol
-      : heading === "isAdmin"
-      ? classes.adminCol
-      : "";
   return (
     <span>
-      <Table className={classes.table} size="small" key={"table-" + tabIndex}>
+      <Table
+        sx={{
+          width: "90%",
+          margin: "auto",
+          minWidth: 650,
+          padding: 10,
+          marginTop: "25px !important"
+        }}
+        size="small"
+        key={"table-" + tabIndex}
+      >
         <TableHead key={"tableHead-" + tabIndex}>
           <TableRow key={"tableHeaderRow-" + tabIndex}>
             <TableCell
@@ -165,9 +102,7 @@ const TableContent = ({
             ></TableCell>
             <TableHeadings
               key={"tableHeadings"}
-              classes={classes}
               tableHeadings={tableHeadings}
-              colorClass={colorClass}
               isUsers={tabIndex === 1}
             />
           </TableRow>
@@ -182,22 +117,29 @@ const TableContent = ({
 
                   const labelId = `enhanced-table-checkbox-${index}`;
                   const isItemSelected = selected === name;
-                  const rowClass = isItemSelected
-                    ? classes.selectedTableCell
-                    : classes.tableCell;
                   return (
-                    <TableRow
-                      className={colorClass}
-                      classes={{ selected: classes.selected }}
-                      key={"tableBodyRowCheck-" + name}
-                    >
+                    <TableRow key={"tableBodyRowCheck-" + name}>
                       <TableCell
                         padding="checkbox"
-                        className={rowClass}
+                        sx={
+                          isItemSelected
+                            ? {
+                                height: 150,
+                                fontSize: 18,
+                                whiteSpace: "normal",
+                                wordWrap: "break-word",
+                                maxWidth: "200px"
+                              }
+                            : {
+                                whiteSpace: "normal",
+                                wordWrap: "break-word",
+                                maxWidth: "100px",
+                                fontSize: 16
+                              }
+                        }
                         key={"tableBodyCellCheck-" + name}
                       >
-                        <Checkbox
-                          className={clsx(colorClass, classes.checkBoxCol)}
+                        <StyledCheckBox
                           key={"tableBodyCheckbox-" + name}
                           id="check"
                           checked={isItemSelected}
@@ -206,7 +148,6 @@ const TableContent = ({
                         />
                       </TableCell>
                       {tableHeadings.map((heading, headingIndex) => {
-                        const widthClass = getWidthClass(heading);
                         return (
                           <TableCell
                             key={"tableBodyCell-" + heading + name}
@@ -214,7 +155,7 @@ const TableContent = ({
                             component="th"
                             scope="row"
                             id={labelId}
-                            className={clsx(rowClass, colorClass, widthClass)}
+                            sx={{ fontSize: "16px" }}
                           >
                             <div key={"tableCellWrapper-" + name}>
                               {isSelectedForEditing(
@@ -223,7 +164,6 @@ const TableContent = ({
                               ) ? (
                                 heading === "isAdmin" ? (
                                   <RadioEdit
-                                    classes={classes}
                                     checked={row[heading]}
                                     onChange={event =>
                                       setSelectedUserAdmin(event.target.checked)
@@ -237,12 +177,16 @@ const TableContent = ({
                                     currentSelection={row[heading]}
                                     isMultiple={Array.isArray(row[heading])}
                                     allOptions={allRoles}
-                                    classes={classes}
                                     user={row["username"]}
                                   />
                                 )
                               ) : (
-                                editTextRows(row, heading, allRoles.length)
+                                editTextRows(
+                                  row,
+                                  heading,
+                                  allRoles.length,
+                                  isItemSelected
+                                )
                               )}
                             </div>
                           </TableCell>
@@ -265,37 +209,33 @@ const TableContent = ({
         nextIconButtonProps={{
           "aria-label": "next page"
         }}
-        className={clsx(classes.tablePagination, colorClass)}
-        onChangePage={(event, newPage) => setPage(newPage)}
+        sx={{ fontWeight: "bold" }}
+        onPageChange={(event, newPage) => setPage(newPage)}
       />
     </span>
   );
 };
 
-const TableHeadings = ({ classes, tableHeadings, colorClass, isUsers }) =>
+const TableHeadings = ({ tableHeadings }) =>
   tableHeadings.map((heading, headingIndex) => {
-    const roleClass = isUsers
-      ? ""
-      : heading === "role"
-      ? classes.roleCol
-      : classes.otherCol;
     var aligned = headingIndex === 0 ? "left" : "right";
     return (
       <TableCell
         align={aligned}
         key={"tableHeaderCell" + heading}
-        className={clsx(
-          classes.tableCell,
-          classes.tableHeader,
-          colorClass,
-          roleClass
-        )}
+        sx={{
+          whiteSpace: "normal",
+          wordWrap: "break-word",
+          maxWidth: "100px",
+          fontSize: 20,
+          fontWeight: "bold"
+        }}
       >
         {rowLabels[heading]}
       </TableCell>
     );
   });
-const RadioEdit = ({ classes, checked, onChange }) => {
+const RadioEdit = ({ checked, onChange }) => {
   const [isChecked, setIsChecked] = useState(checked);
   return (
     <Switch
@@ -314,7 +254,6 @@ const DropDownEdit = ({
   isMultiple,
   allOptions,
   setUserField,
-  classes,
   user
 }) => {
   const [selectedField, setSelectedField] = useState(currentSelection);
@@ -332,7 +271,11 @@ const DropDownEdit = ({
           setSelectedField(event.target.value);
           setUserField(event.target.value);
         }}
-        className={classes.select}
+        sx={{
+          "&:before": {
+            borderColor: "#ffffff"
+          }
+        }}
         input={
           <Input
             id="select-multiple-placeholder-user"
@@ -349,4 +292,4 @@ const DropDownEdit = ({
     </FormControl>
   );
 };
-export default withStyles(styles)(TableContent);
+export default TableContent;

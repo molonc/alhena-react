@@ -2,48 +2,51 @@ import React, { useState, useEffect } from "react";
 import { Formik } from "formik";
 import * as yup from "yup";
 
-import Grid from "@material-ui/core/Grid";
-import { Typography } from "@material-ui/core";
-import Paper from "@material-ui/core/Paper";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
+import Grid from "@mui/material/Grid";
+import { Typography } from "@mui/material";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
 
-import { withStyles } from "@material-ui/styles";
+import { styled } from "@mui/system";
+import { withStyles } from "@mui/styles";
 
 import { gql, useLazyQuery } from "@apollo/client";
 
 const styles = theme => ({
   button: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: "#4882bb !important",
+    color: "white !important",
+    //fontWeight: "bold !important",
     textAlign: "center"
   },
   paperTitle: {
     paddingBottom: theme.spacing.unit * 5,
-    padding: theme.spacing.unit * 3,
+    //padding: theme.spacing.unit * 3,
     height: 125,
-    borderRadius: 20,
+    borderRadius: "20px !important",
     overflowX: "auto",
     width: "25vw",
-    color: "white",
-    textAlign: "center",
-    background: theme.palette.primary.main
+    color: "#505050 !important",
+    padding: "10px !important",
+    textAlign: "center"
   },
   paperForm: {
     overflowX: "auto",
     margin: "auto",
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: "20px !important",
+    padding: "20px !important",
     width: "25vw",
     marginBottom: theme.spacing.unit,
     marginTop: "-70px",
     display: "inline-block"
   },
-  helperText: { color: "red" },
+  helperText: { color: "red !important" },
   textField: {
-    marginLeft: 10,
+    //    marginLeft: 10,
     width: "100%",
-    margin: 10,
-    paddingRight: 15
+    margin: "10px !important",
+    marginLeft: "0px !important"
   }
 });
 const UNIQUE_USER = gql`
@@ -60,6 +63,14 @@ export const NEWUSER = gql`
     }
   }
 `;
+const StyledTextField = styled(TextField)(({ theme }) => {
+  console.log(theme);
+  return {
+    width: "100%",
+    margin: "10px !important",
+    marginLeft: "0px !important"
+  };
+});
 
 const NewAccount = ({ email, dispatch, classes }) => {
   const [error, setError] = useState(null);
@@ -91,37 +102,51 @@ const NewAccount = ({ email, dispatch, classes }) => {
   }, [data, loading, error]);
   const uniqueUserError =
     isUserUniqueData && isUserUniqueData.doesUserExist.userAlreadyExists;
-  /*        {error && (
-          <SnackbarContentWrapper
-            variant="error"
-            errorNumber={error}
-            setError={setError}
-          />
-        )}*/
+
   return (
-    <Grid container direction="row" justify="center" alignItems="center">
+    <Grid container direction="row" justifyContent="center" alignItems="center">
       <div
         style={{
           position: "absolute",
           top: "15%"
         }}
       >
-        <Paper rounded className={classes.paperTitle}>
-          <Typography variant="h4" color="white">
-            Create Account
-          </Typography>
+        <Paper
+          rounded
+          sx={{
+            paddingBottom: 5,
+            //padding: theme.spacing.unit * 3,
+            height: 125,
+            borderRadius: "20px !important",
+            overflowX: "auto",
+            width: "25vw",
+            color: "#505050 !important",
+            padding: "10px !important",
+            textAlign: "center"
+          }}
+        >
+          <Typography variant="h4">Create Account</Typography>
         </Paper>
-        <Paper rounded className={classes.paperForm}>
+        <Paper
+          rounded
+          sx={{
+            overflowX: "auto",
+            margin: "auto",
+            borderRadius: "20px !important",
+            padding: "20px !important",
+            width: "25vw",
+            marginBottom: 1,
+            marginTop: "-70px",
+            display: "inline-block"
+          }}
+        >
           <Formik
             validationSchema={yup.object({
               name: yup
                 .string()
                 .min(2, "Must be at least 2 characters")
                 .required("Name is required")
-                .matches(
-                  /^[a-zA-Z0-9]+$/,
-                  "Cannot contain special characters or spaces"
-                ),
+                .matches(/^[aA-zZ\s]+$/, "Cannot contan special characters"),
               username: yup
                 .string()
                 .min(2, "Must be at least 2 characters")
@@ -171,7 +196,6 @@ const NewAccount = ({ email, dispatch, classes }) => {
               })
             }
             style={{ maxWidth: 450 }}
-            className={classes.root}
             autoComplete="off"
             instantValidate={false}
             autoComplete="off"
@@ -182,13 +206,12 @@ const NewAccount = ({ email, dispatch, classes }) => {
               touched,
               handleSubmit,
               handleChange,
-              setFieldValue,
-              isValid
+              setFieldValue
             }) => {
+              const isValid = !Object.keys(errors).length;
               return (
                 <div>
-                  <TextField
-                    className={classes.textField}
+                  <StyledTextField
                     key={"newUserName"}
                     onChange={event =>
                       setFieldValue("name", event.target.value)
@@ -200,12 +223,11 @@ const NewAccount = ({ email, dispatch, classes }) => {
                     type={"text"}
                     validators={["required"]}
                     FormHelperTextProps={{
-                      className: classes.helperText
+                      className: { color: "red !important" }
                     }}
                     helperText={errors.name}
                   />
-                  <TextField
-                    className={classes.textField}
+                  <StyledTextField
                     key={"newUserUsername"}
                     onChange={event =>
                       setFieldValue("username", event.target.value)
@@ -215,13 +237,14 @@ const NewAccount = ({ email, dispatch, classes }) => {
                     fullWidth
                     label={"Username:"}
                     type={"text"}
-                    FormHelperTextProps={{
-                      className: classes.helperText
-                    }}
+                    FormHelperTextProps={
+                      {
+                        //    className: classes.helperText
+                      }
+                    }
                     helperText={errors.username}
                   />
-                  <TextField
-                    className={classes.textField}
+                  <StyledTextField
                     key={"newUserEmail"}
                     onChange={event =>
                       setFieldValue("email", event.target.value)
@@ -232,15 +255,16 @@ const NewAccount = ({ email, dispatch, classes }) => {
                     label={"Email:"}
                     type={"text"}
                   />
-                  <TextField
-                    className={classes.textField}
+                  <StyledTextField
                     key={"newUserPassword"}
                     onChange={event =>
                       setFieldValue("password", event.target.value)
                     }
-                    FormHelperTextProps={{
-                      className: classes.helperText
-                    }}
+                    FormHelperTextProps={
+                      {
+                        //                      className: classes.helperText
+                      }
+                    }
                     name={"password"}
                     value={values.password}
                     fullWidth
@@ -248,16 +272,17 @@ const NewAccount = ({ email, dispatch, classes }) => {
                     type={"password"}
                     helperText={errors.password}
                   />
-                  <TextField
-                    className={classes.textField}
+                  <StyledTextField
                     key={"newUserPasswordVerify"}
                     name={"passwordVerify"}
                     onChange={event =>
                       setFieldValue("passwordVerify", event.target.value)
                     }
-                    FormHelperTextProps={{
-                      className: classes.helperText
-                    }}
+                    FormHelperTextProps={
+                      {
+                        //  className: classes.helperText
+                      }
+                    }
                     value={values.passwordVerify}
                     fullWidth
                     label={"Verify Password:"}
@@ -266,9 +291,14 @@ const NewAccount = ({ email, dispatch, classes }) => {
                   />
                   <div style={{ textAlign: "center" }}>
                     <Button
+                      sx={{
+                        backgroundColor: "#4882bb !important",
+                        color: "white !important",
+                        //fontWeight: "bold !important",
+                        textAlign: "center"
+                      }}
                       type="submit"
                       disabled={!isValid}
-                      className={classes.button}
                       variant="contianed"
                       onClick={handleSubmit}
                     >
@@ -285,4 +315,4 @@ const NewAccount = ({ email, dispatch, classes }) => {
   );
 };
 
-export default withStyles(styles)(NewAccount);
+export default NewAccount;

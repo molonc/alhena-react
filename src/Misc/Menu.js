@@ -1,72 +1,18 @@
 import React, { useState } from "react";
-import { withStyles } from "@material-ui/core/styles";
 
 import { withRouter } from "react-router-dom";
 
 import { useAppState } from "../util/app-state";
-import SpeedDialAction from "@material-ui/lab/SpeedDialAction";
-import HelpIcon from "@material-ui/icons/Help";
-import SearchIcon from "@material-ui/icons/Search";
-import ExitToApp from "@material-ui/icons/ExitToApp";
-import MenuIcon from "@material-ui/icons/Menu";
-import SpeedDial from "@material-ui/lab/SpeedDial";
-import InfoIcon from "@material-ui/icons/Info";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
+import SpeedDialAction from "@mui/material/SpeedDialAction";
+import HelpIcon from "@mui/icons-material/Help";
+import SearchIcon from "@mui/icons-material/Search";
+import ExitToApp from "@mui/icons-material/ExitToApp";
+import MenuIcon from "@mui/icons-material/Menu";
+import SpeedDial from "@mui/material/SpeedDial";
+import InfoIcon from "@mui/icons-material/Info";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 
-const styles = theme => ({
-  fab: {
-    backgroundColor: "#c7e4e8",
-    //backgroundColor: theme.palette.primary.main,
-    boxShadow: "none !important",
-    borderRadius: "10%",
-    "&:hover": {
-      backgroundColor: "#c7e4e8"
-      //  backgroundColor: theme.palette.primary.main
-    }
-  },
-  menu: {
-    color: "black",
-    backgroundColor: "#c7e4e8",
-    //  backgroundColor: theme.palette.primary.main,
-    boxShadow:
-      "0px 0px 0px 0px rgba(0,0,0,0), 0px 0px 0px 0px rgba(0,0,0,0), 0px 0px 0px 0px rgba(0,0,0,0) !important",
-
-    "&:hover": {
-      boxShadow:
-        "0px 0px 0px 0px rgba(0,0,0,0), 0px 0px 0px 0px rgba(0,0,0,0), 0px 0px 0px 0px rgba(0,0,0,0) !important",
-
-      color: theme.palette.background.default,
-      backgroundColor: "#c7e4e8"
-      //backgroundColor: theme.palette.primary.main
-    }
-  },
-  root: {
-    flexGrow: 1
-  },
-  wrapper: {
-    zIndex: 100,
-    float: "left",
-    position: "fixed",
-    bottom: 15,
-    left: 15,
-    width: 380
-  },
-  speedDial: {
-    color: theme.palette.primary.dark,
-    boxShadow: "none !important",
-    zIndex: 101,
-    float: "left",
-    "&.MuiSpeedDial-directionUp, &.MuiSpeedDial-directionLeft": {
-      bottom: theme.spacing(2),
-      right: theme.spacing(2)
-    },
-    "&.MuiSpeedDial-directionDown, &.MuiSpeedDial-directionRight": {
-      top: theme.spacing(2),
-      left: theme.spacing(2)
-    }
-  }
-});
 const unauthenticatedActions = [
   {
     icon: <AccountCircleIcon />,
@@ -101,16 +47,12 @@ const Menu = ({ history, classes }) => {
   );
 
   const [direction] = useState("up");
-  const [open, setOpen] = useState(false);
+  const [openSpeed, setOpenSpeed] = useState(false);
 
   const handleClose = (event, reason) => {
     if (reason !== "toggle") {
-      setOpen(false);
+      setOpenSpeed(false);
     }
-  };
-
-  const handleOpen = (event, reason) => {
-    setOpen(true);
   };
 
   const handleAction = (name, history, dispatch) => {
@@ -128,24 +70,75 @@ const Menu = ({ history, classes }) => {
       case "Search":
         return history.push("/dashboards");
       default:
-        return setOpen(false);
+        return setOpenSpeed(false);
     }
   };
 
   return (
-    <div className={classes.root}>
+    <div
+      style={{
+        flexGrow: 1
+      }}
+    >
       <div
-        className={classes.wrapper}
-        style={{ pointerEvents: open ? "all" : "none" }}
+        style={{
+          pointerEvents: openSpeed ? "all" : "none",
+          zIndex: 100,
+          float: "left",
+          position: "fixed",
+          bottom: 15,
+          left: 15,
+          width: 380
+        }}
       >
         <SpeedDial
           ariaLabel="Alhena Menu"
-          classes={{ root: classes.speedDial, fab: classes.fab }}
-          icon={<MenuIcon className={classes.menu} />}
-          onClose={handleClose}
+          sx={{
+            color: "#31506b !important",
+            //backgroundColor: "#31506b",
+            boxShadow: "none !important",
+            zIndex: 101,
+            float: "left",
+            "& .MuiSpeedDial-fab": {
+              backgroundColor: "#31506b !important"
+            },
+            "&.MuiSpeedDial-directionUp, &.MuiSpeedDial-directionLeft": {
+              bottom: 2,
+              right: 2
+            },
+            "&.MuiSpeedDial-directionDown, &.MuiSpeedDial-directionRight": {
+              top: 2,
+              left: 2
+            }
+          }}
+          icon={
+            <MenuIcon
+              sx={theme => ({
+                color: "white",
+                backgroundColor: "#31506b !important",
+                boxShadow:
+                  "0px 0px 0px 0px rgba(0,0,0,0), 0px 0px 0px 0px rgba(0,0,0,0), 0px 0px 0px 0px rgba(0,0,0,0) !important",
+
+                "&:hover": {
+                  boxShadow:
+                    "0px 0px 0px 0px rgba(0,0,0,0), 0px 0px 0px 0px rgba(0,0,0,0), 0px 0px 0px 0px rgba(0,0,0,0) !important",
+
+                  color: theme.palette.background.default,
+                  backgroundColor: "#31506b"
+                }
+              })}
+            />
+          }
+          onClose={event => {
+            event.persist();
+            handleClose(event);
+          }}
           transitionDuration={{ exit: 100 }}
-          onOpen={handleOpen}
-          open={open}
+          onOpen={event => {
+            event.persist();
+            setOpenSpeed(true);
+          }}
+          open={openSpeed}
           direction={direction}
         >
           {actions.map(action => (
@@ -154,8 +147,9 @@ const Menu = ({ history, classes }) => {
               icon={action.icon}
               tooltipTitle={action.name}
               tooltipPlacement={"right"}
-              onClick={() => {
-                return handleAction(action.name, history, dispatch);
+              onClick={event => {
+                event.stopPropagation();
+                handleAction(action.name, history, dispatch);
               }}
             />
           ))}
@@ -164,4 +158,4 @@ const Menu = ({ history, classes }) => {
     </div>
   );
 };
-export default withStyles(styles)(withRouter(Menu));
+export default withRouter(Menu);

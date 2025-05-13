@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import * as d3 from "d3";
-import { withStyles } from "@material-ui/core/styles";
+import withStyles from "@mui/styles/withStyles";
 
 import { gql, useQuery } from "@apollo/client";
 
@@ -26,7 +26,7 @@ import Minimap from "./Minimap.js";
 import LoadingCircle from "../CommonModules/LoadingCircle.js";
 import ProfileWrapper from "./ProfileWrapper.js";
 
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 
 import { useStatisticsState } from "../DashboardState/statsState";
 
@@ -137,16 +137,15 @@ const Heatmap = ({ analysis, allHeatmapOrder, categoryStats }) => {
   const yScale = getYScale(heatmapConfig.height / heatmapConfig.rowHeight);
 
   const chromMap = getChromPixelMapping(chromosomes);
-
   return (
     <Grid container direction="column">
       <Grid
         item
         container
         direction="row"
-        justify="space-between"
+        justifyContent="space-between"
         alignItems="center"
-        height={heatmapConfig["height"] - heatmapConfig.chromosome["height"]}
+        height={heatmapConfig.categories.legendHeight}
         width={heatmapConfig.wrapperWidth}
       >
         <Grid item>
@@ -220,7 +219,7 @@ const Heatmap = ({ analysis, allHeatmapOrder, categoryStats }) => {
           />
         </Grid>
       </Grid>
-      <Grid item style={{ marginTop: "-6px" }}>
+      <Grid item style={{ paddingTop: 10 }}>
         <canvas
           id="chromAxis"
           height={heatmapConfig.chromosome["height"]}

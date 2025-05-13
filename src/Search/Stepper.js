@@ -1,128 +1,50 @@
 import React, { useState, useEffect } from "react";
-import clsx from "clsx";
-import { makeStyles } from "@material-ui/core/styles";
-import RadioButtonCheckedIcon from "@material-ui/icons/RadioButtonChecked";
-import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
-import Drawer from "@material-ui/core/Drawer";
-import Tooltip from "@material-ui/core/Tooltip";
 
-const drawerWidth = 90;
-const useStyles = makeStyles(theme => ({
-  root: {
-    maxWidth: "100px",
-    marginTop: "40vh",
-    background: "none",
-    position: "fixed",
-    right: 0,
-    float: "right",
-    margin: theme.spacing(5)
-  },
-  activeWhite: {
-    fontSize: 40,
-    cursor: "pointer",
-    color: "white !important"
-  },
-  activeBlack: {
-    fontSize: 40,
-    color: "#1b1919a3 !important"
-  },
-  activeBold: {
-    fontSize: 40,
-    cursor: "pointer",
-    fontWeight: "bold"
-  },
-  disabled: {
-    fontSize: 40,
-    color: "#1b1919a3",
-    pointer: "none !important"
-  },
-  drawerClose: {
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    }),
-    overflowX: "hidden",
-    width: 0,
-    borderLeft: 0,
-    background: "none"
-  },
-  drawerOpen: {
-    width: drawerWidth,
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen
-    }),
-    borderLeft: 0,
-    background: "none"
-  },
-  drawerContent: {
-    zIndex: -10,
-    maxWidth: "100px",
-    marginTop: "40vh",
-    background: "none",
-    position: "absolute",
-    right: 0,
-    float: "right",
-    marginLeft: theme.spacing(2)
-  },
-  drawerLabelTwoLines: {
-    cursor: "pointer",
-    marginBottom: theme.spacing(20)
-  },
-  drawerLabelOneLine: {
-    cursor: "pointer",
-    marginBottom: theme.spacing(20)
-  },
-  line: {
-    minHeight: 80
-  },
-  button: {
-    marginBottom: 100
-  },
-  vertical: {
-    right: 0
-  }
-}));
+import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
+import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
+import Tooltip from "@mui/material/Tooltip";
+import Grid from "@mui/material/Grid";
 
 function getSteps() {
   return ["Project Selection", "Analysis Search", "Dashboard"];
 }
 
 const SearchStepper = ({ activeStep, handleBackStep, stepTextValues }) => {
-  const classes = useStyles();
   const steps = getSteps();
-  const [detailsDrawer, setDetailsDrawer] = useState(
-    activeStep === 1 ? true : false
-  );
-  const [stepperColour, setStepperColour] = useState(classes.activeWhite);
+  const [stepperColour, setStepperColour] = useState({
+    fontSize: 20,
+    cursor: "pointer",
+    color: "#e5b150 !important"
+  });
 
   useEffect(() => {
     activeStep === 2
-      ? setStepperColour(classes.activeBlack)
-      : setStepperColour(classes.activeWhite);
+      ? setStepperColour({ fontSize: 40, color: "#e5b150 !important" })
+      : setStepperColour({
+          fontSize: 40,
+          cursor: "pointer",
+          color: "#e5b150 !important"
+        });
   }, [activeStep]);
 
   const handleStep = step => {
-    if (activeStep === 1) {
-      setDetailsDrawer(true);
-    }
     if (step < activeStep) {
       handleBackStep(step);
     }
   };
 
-  const moreDetailOpen = () => {
-    setDetailsDrawer(true);
-  };
-
-  const moreDetailExit = () => {
-    if (activeStep !== 1) {
-      setDetailsDrawer(false);
-    }
-  };
-
   return (
-    <div className={classes.root}>
+    <Grid
+      sx={{
+        maxWidth: "100px",
+        marginTop: "40vh !important",
+        background: "none",
+        position: "fixed",
+        right: 0,
+        float: "right",
+        margin: 2
+      }}
+    >
       {steps.map((label, index) => (
         <span key={"span-wrapper" + label}>
           <Tooltip
@@ -132,46 +54,54 @@ const SearchStepper = ({ activeStep, handleBackStep, stepTextValues }) => {
             arrow
             placement="left"
           >
-            <div
-              key={"step-wrapper" + label}
-              className={classes.button}
-              onMouseEnter={moreDetailOpen}
-              onMouseLeave={moreDetailExit}
-            >
+            <div key={"step-wrapper" + label}>
               {activeStep === index ? (
-                <RadioButtonCheckedIcon className={stepperColour} />
+                <RadioButtonCheckedIcon sx={stepperColour} />
               ) : (
                 <FiberManualRecordIcon
-                  className={
-                    index < activeStep ? stepperColour : classes.disabled
+                  sx={
+                    index < activeStep
+                      ? stepperColour
+                      : {
+                          fontSize: 40,
+                          color: "#c3c3c3",
+                          pointer: "none !important"
+                        }
                   }
                   onClick={() => handleStep(index)}
                 />
               )}
             </div>
           </Tooltip>
-          {activeStep > index ? (
-            <div
-              key={"step-wrapper" + label}
-              className={stepperColour}
-              style={{
-                marginTop: -75,
-                color: "white",
-                fontWeight: "bold"
-              }}
-            >
-              ﹀
-            </div>
-          ) : (
-            <div
-              style={{
-                marginTop: -75
-              }}
-            />
-          )}
+          {index !== 2 &&
+            (activeStep > index ? (
+              <span
+                key={"step-wrapper" + label}
+                className={stepperColour}
+                style={{
+                  marginLeft: "4px",
+                  color: "#e5b150",
+                  fontWeight: "bold",
+                  fontSize: "30px"
+                }}
+              >
+                ▼
+              </span>
+            ) : (
+              <span
+                style={{
+                  fontSize: "30px",
+                  marginLeft: "4px",
+                  color: "#c3c3c3",
+                  fontWeight: "bold"
+                }}
+              >
+                ▼
+              </span>
+            ))}
         </span>
       ))}
-    </div>
+    </Grid>
   );
 };
 export default SearchStepper;

@@ -8,10 +8,11 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary
-} from "@material-ui/core";
+} from "@mui/material";
 
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import ClearIcon from "@mui/icons-material/Clear";
 
 import ChipHeatmapSettings from "./Settings/ChipHeatmapSettings.js";
 import ScatterplotSettings from "./Settings/ScatterplotSettings.js";
@@ -20,17 +21,19 @@ import ViolinSettings from "./Settings/ViolinSettings.js";
 import GCBiasSettings from "./Settings/GCBiasSettings.js";
 import DataFilters from "./Settings/DataFilters.js";
 
-import ShareIcon from "@material-ui/icons/Share";
-import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
-import BackspaceTwoToneIcon from "@material-ui/icons/BackspaceTwoTone";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ShareIcon from "@mui/icons-material/Share";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import BackspaceTwoToneIcon from "@mui/icons-material/BackspaceTwoTone";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import { withStyles } from "@material-ui/core/styles";
+import withStyles from "@mui/styles/withStyles";
+import { makeStyles } from "@mui/styles";
+
 import { useDashboardState } from "../Search/ProjectView/ProjectState/dashboardState";
 
 import { useStatisticsState } from "./DashboardState/statsState";
 
-const styles = theme => ({
+const styles = makeStyles(theme => ({
   fieldTitle: {
     paddingBottom: 30
   },
@@ -43,19 +46,12 @@ const styles = theme => ({
   },
   expanded: { margin: "0px !important" },
   panel: {
-    padding: theme.spacing(3, 3, 3, 3),
+    padding: theme.spacing(2, 2, 2, 2),
     margin: theme.spacing(0, 0, 0, 0),
     width: "100%",
     background: "white"
   },
-  selectedCells: {
-    backgroundColor: "#e6eaec",
-    padding: theme.spacing(3, 3, 3, 3),
-    margin: theme.spacing(2, 0, 2, 0)
-  },
-  markLabel: {
-    color: "rgba(225, 225, 225, 0.54)"
-  },
+
   metaDataPanel: {
     background: "white",
     marginBottom: 10
@@ -67,47 +63,46 @@ const styles = theme => ({
     margin: theme.spacing(3)
   },
   exportButton: {
+    color: "#31506b",
     width: 180,
-    marginBottom: 10,
-    //marginRight: 12,
-    backgroundColor: "white"
+    color: "#31506b !important",
+    border: "1px solid #31506b !important",
+    //marginBottom: "10px !important",
+    marginRight: "20px !important",
+    backgroundColor: "white !important"
   },
   shareButton: {
+    color: "#31506b !important",
+    border: "1px solid #31506b !important",
     width: 180,
-    marginBottom: 10,
+    //marginBottom: 10,
     marginLeft: 6,
-    backgroundColor: "white"
+    backgroundColor: "white !important"
   },
-  fieldComponent: {
-    margin: theme.spacing(2, 0, 0, 0)
-  },
-  formControl: {
-    width: "100%",
-    margin: theme.spacing(0, 0, 2, 0)
-  },
-  gridSlider: { width: "100%", marginBottom: 10 },
+
   settings: {
     padding: 10,
     paddingRight: 0,
     width: 400,
-    background: "none",
+    background: "#F5F5F5 !important",
     height: "100%",
-    position: "sticky",
-    overflowY: "scroll"
+    position: "sticky"
+    //overflowY: "scroll"
   },
   sliderPanel: {
     padding: 20
   },
   slider: {
+    color: "#e2ad13 !important"
     //marginTop: 10
   },
   search: {
+    fontSize: "14px",
     marginTop: 0,
     '&&[class*="MuiFormControl-marginNormal"]': {
       marginTop: 0
     }
   },
-  dropDownLabel: { backgroundColor: "white", padding: 3 },
   titlePadding: {
     paddingBottom: 15,
     paddingTop: 15
@@ -116,13 +111,12 @@ const styles = theme => ({
     color: "white"
   },
   panelDetails: {
-    padding: "0px 24px 24px"
+    padding: "0px 54px 24px !important"
   }
-});
+}));
 
 const SettingsPanel = ({
   analysis,
-  classes,
   categoryStats,
   cellCount,
   chipHeatmapOptions,
@@ -145,6 +139,7 @@ const SettingsPanel = ({
     },
     dispatch
   ] = useStatisticsState();
+  const classes = styles();
 
   const meta = metaData ? metaData["metadata"] : [];
 
@@ -174,7 +169,14 @@ const SettingsPanel = ({
   return (
     <Paper
       key={"settingsPanelPaper"}
-      className={classes.settings}
+      sx={{
+        padding: "10px",
+        paddingRight: "0px",
+        width: "400px",
+        background: "#F5F5F5 !important",
+        height: "100%",
+        position: "sticky"
+      }}
       elevation={0}
     >
       <MetaData
@@ -212,13 +214,23 @@ const SettingsPanel = ({
       <Grid
         container
         direction="row"
-        justify="flex-start"
-        alignItems="flex-start"
+        justifyContent="flex-start"
+        alignItems="space-between"
+        sx={{ marginBottom: "10px !important" }}
       >
         <Button
           variant="outlined"
-          color="default"
-          className={classes.exportButton}
+          sx={{
+            width: 180,
+            color: "#31506b !important",
+            border: "1px solid #31506b !important",
+            marginRight: "20px !important",
+            backgroundColor: "white !important",
+            ":hover": {
+              color: "white !important",
+              backgroundColor: "#31506b !important"
+            }
+          }}
           onClick={() => setOpenExportPopup()}
           startIcon={<CloudDownloadIcon />}
         >
@@ -226,8 +238,17 @@ const SettingsPanel = ({
         </Button>
         <Button
           variant="outlined"
-          color="default"
-          className={classes.shareButton}
+          sx={{
+            color: "#31506b !important",
+            border: "1px solid #31506b !important",
+            width: 180,
+            marginLeft: "6px",
+            backgroundColor: "white !important",
+            ":hover": {
+              color: "white !important",
+              backgroundColor: "#31506b !important"
+            }
+          }}
           onClick={() => setOpenSharePopup()}
           startIcon={<ShareIcon />}
         >
@@ -277,13 +298,11 @@ const SettingsPanel = ({
       >
         {categoryStats.length > 0 ? (
           <DataFilters
-            key={"dataFilterWrapper"}
             numericalDataFilters={numericalDataFilters}
             experimentalConditions={categoryStats.filter(
               category => category["category"] === experimentalCondition["type"]
             )}
             analysis={selectedAnalysis}
-            classes={classes}
             update={(value, type) => {
               update(value, type);
             }}
@@ -291,7 +310,6 @@ const SettingsPanel = ({
           />
         ) : (
           <DataFilters
-            key={"dataFilterWrapper"}
             numericalDataFilters={[]}
             experimentalConditions={[]}
             analysis={""}
@@ -311,7 +329,6 @@ const SettingsPanel = ({
         }}
       >
         <ScatterplotSettings
-          classes={classes}
           analysis={analysis}
           setAxisOption={value => update(value, "SCATTERPLOT_AXIS_UPDATE")}
           isDisabled={isDisabled}
@@ -330,7 +347,6 @@ const SettingsPanel = ({
         }}
       >
         <ChipHeatmapSettings
-          classes={classes}
           axisOptions={chipHeatmapOptions}
           currentlySelectedAxis={chipHeatmapAxis}
           setAxisOption={value => update(value, "CHIPHEATMAP_AXIS_UPDATE")}
@@ -350,7 +366,6 @@ const SettingsPanel = ({
         }}
       >
         <ViolinSettings
-          classes={classes}
           axisOptions={violinOptions}
           setAxisOption={value => update(value, "VIOLIN_AXIS_UPDATE")}
           isDisabled={isDisabled}
@@ -369,7 +384,6 @@ const SettingsPanel = ({
         }}
       >
         <GCBiasSettings
-          classes={classes}
           setAxisOption={value => update(value, "GCBIAS_IS_GROUPED")}
           isDisabled={isDisabled}
         />
@@ -410,8 +424,18 @@ const AccordianWrapper = ({
       </Typography>
       {isResetPossible && (
         <AccordionActions style={{ width: "100%" }}>
-          <Button size="small" onClick={resetFilter}>
-            {name === "dataFilter" ? "Clear All" : "Reset"}
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={resetFilter}
+            endIcon={<ClearIcon />}
+            sx={{
+              color: "#31506b",
+              border: "1px solid #31506b",
+              fontWeight: "bold"
+            }}
+          >
+            {name === "dataFilter" ? "Clear Filter" : "Reset"}
           </Button>
         </AccordionActions>
       )}
@@ -425,33 +449,7 @@ const AccordianWrapper = ({
     </AccordionDetails>
   </Accordion>
 );
-/*  {project && (
-    <Typography
-      variant="h6"
-      fontWeight="fontWeightRegular"
-      style={{ color: "#a2a2a2" }}
-    >
-      Project: {project}
-    </Typography>
-  )}
-  {metaData && (
-    <Typography
-      variant="h6"
-      fontWeight="fontWeightRegular"
-      style={{ color: "#a2a2a2" }}
-    >
-      Library: {metaData["library_id"]}
-    </Typography>
-  )}
-  {metaData && (
-    <Typography
-      variant="h6"
-      fontWeight="fontWeightRegular"
-      style={{ color: "#a2a2a2" }}
-    >
-      Sample: {metaData["sample_id"]}
-    </Typography>
-  )}*/
+
 const MetaData = ({ metaData, classes, count, analysis, library, project }) => (
   <Paper
     elevation={0}
@@ -461,7 +459,7 @@ const MetaData = ({ metaData, classes, count, analysis, library, project }) => (
     <Grid
       container
       direction="column"
-      justify="space-between"
+      justifyContent="space-between"
       alignItems="flex-start"
     >
       <Typography
@@ -486,6 +484,7 @@ const MetaData = ({ metaData, classes, count, analysis, library, project }) => (
       {metaData !== null ? (
         metaData.map(meta => (
           <Typography
+            key={"typography-" + meta["type"]}
             variant="h6"
             fontWeight="fontWeightRegular"
             style={{ color: "#a2a2a2" }}
@@ -511,18 +510,25 @@ const MetaData = ({ metaData, classes, count, analysis, library, project }) => (
   </Paper>
 );
 
-const SelectedCellsPanel = ({
-  classes,
-  selectedCellsCount,
-  clearCellSelection
-}) => (
+const SelectedCellsPanel = ({ selectedCellsCount, clearCellSelection }) => (
   <Paper
-    className={[classes.panel, classes.selectedCells]}
+    sx={{
+      p: 2,
+      mb: 2,
+      width: "100%"
+    }}
     variant="outlined"
     elevation={0}
   >
-    <Grid container direction="row" justify="space-between" alignItems="center">
-      <Typography variant="h6">{selectedCellsCount} cells selected</Typography>
+    <Grid
+      container
+      direction="row"
+      justifyContent="space-between"
+      alignItems="center"
+    >
+      <Typography variant="h6" sx={{ color: "#31506b" }}>
+        {selectedCellsCount} cells selected
+      </Typography>
       <Button onClick={() => clearCellSelection()}>
         <BackspaceTwoToneIcon />
       </Button>
@@ -530,4 +536,4 @@ const SelectedCellsPanel = ({
   </Paper>
 );
 
-export default withStyles(styles)(SettingsPanel);
+export default SettingsPanel;

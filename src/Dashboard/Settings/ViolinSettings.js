@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from "react";
 
-import { FormControl, InputLabel, Select } from "@material-ui/core";
+import { FormControl, InputLabel, Select } from "@mui/material";
 
 import { useStatisticsState } from "../DashboardState/statsState";
-const ViolinSettings = ({
-  classes,
-  axisOptions,
-  setAxisOption,
-  isDisabled
-}) => {
+import makeStyles from "@mui/styles/makeStyles";
+
+const useStyles = makeStyles(theme => ({
+  fieldComponent: {
+    margin: theme.spacing(2, 0, 0, 0)
+  },
+  formControl: {
+    width: "100%",
+    margin: theme.spacing(0, 0, 2, 0) + " !important"
+  },
+  dropDownLabel: { backgroundColor: "white", padding: "3px !important;" }
+}));
+
+const ViolinSettings = ({ axisOptions, setAxisOption, isDisabled }) => {
   const [{ violinAxis }] = useStatisticsState();
   const [xAxisLabel, setXAxisLabel] = useState(violinAxis.x.type);
   const [yAxisLabel, setYAxisLabel] = useState(violinAxis.y.type);
+  const classes = useStyles();
 
   useEffect(() => {
     if (violinAxis) {
@@ -61,7 +70,7 @@ const ViolinSettings = ({
           value={xAxisLabel}
           name="xViolinAxisAxis"
           onChange={handleAxisChange("x")}
-          labelWidth={100}
+          labelwidth={100}
         >
           {axisOptions
             ? axisOptions["xAxis"].map((option, index) => (
@@ -95,7 +104,7 @@ const ViolinSettings = ({
           key="yAxisViolin"
           value={yAxisLabel}
           onChange={handleAxisChange("y")}
-          labelWidth={100}
+          labelwidth={100}
         >
           {axisOptions
             ? axisOptions["yAxis"].map((option, index) => (

@@ -4,8 +4,8 @@ import { gql, useQuery } from "@apollo/client";
 
 import * as d3 from "d3";
 
-import Grid from "@material-ui/core/Grid";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import Grid from "@mui/material/Grid";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { heatmapConfig } from "./config.js";
 import { getGenomeYScale } from "./utils.js";
@@ -38,10 +38,6 @@ const ProfileWrapper = ({
   const axisDomain = Array.from(Array(maxState + 1).keys());
   const xOffset = categoryLength === 1 ? 12 : categoryLength === 2 ? 5 : 0;
   const [isLoading, setIsLoading] = useState(false);
-
-  function setLoadingCircle(value) {
-    setIsLoading(value);
-  }
 
   function useHookWithRefCallback() {
     const ref = useRef(null);
@@ -98,36 +94,6 @@ const ProfileWrapper = ({
 
   const [ref] = useHookWithRefCallback();
 
-  const ProfileWithData = ({ resetLoadingCircle }) => {
-    if (cellId) {
-      const { loading, error, data } = useQuery(BINS_QUERY, {
-        variables: {
-          analysis: analysis,
-          id: cellId
-        }
-      });
-
-      if (loading) {
-        resetLoadingCircle(true);
-        return null;
-      }
-      if (error) return null;
-
-      const { bins } = data;
-      resetLoadingCircle(false);
-      return (
-        <Profile
-          cellSegs={segs}
-          chromosomes={chromosomes}
-          bins={bins}
-          genomeYScale={genomeYScale}
-        />
-      );
-    } else {
-      return null;
-    }
-  };
-
   return (
     <Grid
       item
@@ -163,7 +129,16 @@ const ProfileWrapper = ({
           width={heatmapConfig.width}
           height={heatmapConfig.profile.height}
         >
-          <ProfileWithData resetLoadingCircle={value => setIsLoading(value)} />
+          {cellId && (
+            <ProfileWithData
+              cellId={cellId}
+              analysis={analysis}
+              segs={segs}
+              chromosomes={chromosomes}
+              genomeYScale={genomeYScale}
+              resetLoadingCircle={value => setIsLoading(value)}
+            />
+          )}
         </canvas>
         {cellId && isLoading && (
           <CircularProgress
@@ -180,4 +155,39 @@ const ProfileWrapper = ({
   );
 };
 
+const ProfileWithData = ({
+  resetLoadingCircle,
+  cellId,
+  analysis,
+  segs,
+  chromosomes,
+  genomeYScale
+}) => {
+  const { loading, error, data } = useQuery(BINS_QUERY, {
+    variables: {
+      analysis: analysis,
+      id: cellId
+    }
+  });
+
+  if (loading) {
+    resetLoadingCircle(true);
+    return null;
+  }
+  if (error) return null;
+  if (data) {
+    resetLoadingCircle(false);
+  }
+
+  const { bins } = data;
+
+  return (
+    <Profile
+      cellSegs={segs}
+      chromosomes={chromosomes}
+      bins={bins}
+      genomeYScale={genomeYScale}
+    />
+  );
+};
 export default ProfileWrapper;

@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+
 import _ from "lodash";
-import { Grid, Button, TextField, Typography } from "@material-ui/core";
+
+import { Grid, Button, TextField, Typography } from "@mui/material";
+
 import SnackbarContentWrapper from "../Misc/SnackBarPopup.js";
 
 import { gql, useLazyQuery } from "@apollo/client";
 
-const useStyles = makeStyles(theme => ({
-  innerGrid: { padding: 15 },
-  root: { padding: 35 },
-  submitButton: { color: "#fdfdfd", backgroundColor: "#4e89bb" }
-}));
 const UPDATEDASHBOARDLABLES = gql`
   query updateDashboardColumns($columns: [DashboardColumnsInput]) {
     updateDashboardColumns(columns: $columns) {
@@ -19,7 +16,6 @@ const UPDATEDASHBOARDLABLES = gql`
   }
 `;
 const AdminSettings = ({ data }) => {
-  const classes = useStyles();
   const [error, setError] = useState(null);
   const originalLabels = data.reduce((final, d) => {
     final[d.type] = d.label;
@@ -48,7 +44,7 @@ const AdminSettings = ({ data }) => {
       direction="column"
       justify="flex-start"
       alignItems="flex-start"
-      className={classes.root}
+      sx={{ padding: "30px !important" }}
     >
       {error && (
         <SnackbarContentWrapper
@@ -57,14 +53,14 @@ const AdminSettings = ({ data }) => {
           setError={setError}
         />
       )}
-      <Typography variant="h5">Search Table Labeling</Typography>
+      <Typography variant="h5">Search Table Labels</Typography>
       <Grid
         container
         spacing={2}
         direction="row"
         justify="flex-start"
         alignItems="flex-start"
-        className={classes.innerGrid}
+        sx={{ padding: "15px !important" }}
       >
         <Grid
           container
@@ -72,41 +68,54 @@ const AdminSettings = ({ data }) => {
           direction="column"
           justify="flex-start"
           alignItems="flex-start"
-          className={classes.innerGrid}
+          sx={{ padding: "36px !important" }}
         >
           <table>
-            <tr key={"tr-type"}>
-              <th style={{ textAlign: "left" }}>
-                <Typography variant="body">Type </Typography>
-              </th>
-              <th style={{ width: 20 }} />
-              <th style={{ textAlign: "left" }}>
-                <Typography variant="body">Display Label</Typography>
-              </th>
-            </tr>
-            {data.map(option => (
-              <tr key={"tr-" + option.type}>
-                <td key={"td-" + option.t}>
-                  <Typography variant="standard" key={"type-" + option.type}>
-                    {option.type}{" "}
+            <thead>
+              <tr key={"tr-type"}>
+                <th style={{ textAlign: "left" }}>
+                  <Typography variant="body" sx={{ fontFamily: "Helvetica" }}>
+                    Type
                   </Typography>
-                </td>
-                <td style={{ width: 20 }} />
-                <td style={{ textAlign: "left" }}>
-                  <TextField
-                    key={"textfield-" + option.t}
-                    key={option.type + "-label"}
-                    variant="standard"
-                    onChange={event => {
-                      var newLabels = labels;
-                      newLabels[option.type] = event.target.value;
-                      setLabels({ ...newLabels });
-                    }}
-                    value={labels[option.type]}
-                  />
-                </td>
+                </th>
+                <th style={{ width: 20 }} />
+                <th style={{ textAlign: "left" }}>
+                  <Typography variant="body" sx={{ fontFamily: "Helvetica" }}>
+                    Display Label
+                  </Typography>
+                </th>
               </tr>
-            ))}
+            </thead>
+            <tbody>
+              {data.map((option, index) => (
+                <tr key={"tr-" + option.type + index}>
+                  <td key={"td-" + option.type + index}>
+                    <Typography
+                      variant="standard"
+                      key={"type-" + option.type + index}
+                      sx={{ fontFamily: "Helvetica" }}
+                    >
+                      {option.type}
+                    </Typography>
+                  </td>
+                  <td style={{ width: 20 }} />
+                  <td style={{ textAlign: "left" }}>
+                    <TextField
+                      key={"textfield-" + option.type + index}
+                      sx={{ fontFamily: "Helvetica" }}
+                      variant="standard"
+                      onChange={event => {
+                        var newLabels = labels;
+                        newLabels[option.type] = event.target.value;
+                        setLabels({ ...newLabels });
+                      }}
+                      InputProps={{}}
+                      value={labels[option.type]}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </Grid>
       </Grid>
@@ -116,10 +125,10 @@ const AdminSettings = ({ data }) => {
         direction="row"
         justify="flex-end"
         alignItems="flex-end"
-        className={classes.innerGrid}
+        sx={{ padding: "33px !important" }}
       >
         <Button
-          className={classes.submitButton}
+          sx={{ color: "#fdfdfd", backgroundColor: "#4e89bb" }}
           disabled={_.isEqual(labels, originalLabels)}
           variant="outlined"
           disableElevation
