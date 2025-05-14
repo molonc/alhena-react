@@ -19,7 +19,7 @@ This project can be built for production and packaged with Docker. Replace the v
 docker build . -t alhena-react:v1.0.6
 
 # (Optional) for testing
-docker run -d -p 3000:300- --link graphql:graphql alhena-react:v1.0.6
+docker run -d -p 3000:3000 --link graphql:graphql alhena-react:v1.0.6
 
 # Push to Dockerhub
 
