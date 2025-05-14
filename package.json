@@ -1,6 +1,6 @@
 {
-  "name": "viz-react-boilerplate",
-  "version": "0.1.0",
+  "name": "alhena-react",
+  "version": "1.0.7",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.4.8",

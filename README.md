@@ -1,74 +1,31 @@
-# React Boilerplate
+# Alhena - React
 
-This project acts a boilerplate for the React layer of visualizations.
-
-[React layer](https://github.com/shahcompbio/viz-react-boilerplate)
-[GraphQL layer](https://github.com/shahcompbio/viz-graphql-boilerplate)
-
-## Features
-
-It was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-It also includes:
-
-- Interaction with graphQL via [Apollo](https://www.apollographql.com/)
-- Production build in [Docker](https://www.docker.com/)
-
-## How to use
-
-To use the boilerplate:
-
+## Install Dependencies
+Note: use `node v12`
 ```
-git clone --depth=1 https://github.com/shahcompbio/viz-react-boilerplate.git <your project name>
-rm -r <your project name>/.git
+yarn install
 ```
 
-Remember to change:
-
-- Project name in package.json
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.<br>
+## Start Development Server
+```
+yarn start
+```
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Docker build
-
-This project can be built for production and packaged with Docker. To do this:
+## Docker build and Dockerhub
+This project can be built for production and packaged with Docker. Replace the version number with the version of the application being built.
 
 ```
-docker build . -t react-boilerplate
-docker run -d -p 80:80 --link graphql:graphql react-boilerplate
+docker build . -t alhena-react:v1.0.6
+
+# (Optional) for testing
+docker run -d -p 3000:300- --link graphql:graphql alhena-react:v1.0.6
+
+# Push to Dockerhub
+
+# Log in, if needed
+docker login -u molonc 
+
+docker tag alhena-react:v1.0.6 molonc/alhena-react:v1.0.6
+docker push molonc/alhena-react:v1.0.6
 ```

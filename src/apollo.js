@@ -8,6 +8,11 @@ const httpLink = process.env.REACT_APP_BASENAME
   ? process.env.REACT_APP_BASENAME + "/graphql"
   : "/graphql";
 
+// for development
+// const httpLink = process.env.GRAPHQL_BASENAME
+//   ? process.env.GRAPHQL_BASENAME + "/graphql"
+//   : "/graphql";
+
 const link = createHttpLink({
   uri: httpLink,
   credentials: "same-origin"
